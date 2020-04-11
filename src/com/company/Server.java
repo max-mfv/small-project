@@ -1,5 +1,7 @@
 package com.company;
 
+import com.company.server.MySQLAccess;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,15 +12,19 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server {
-    public final static int SERVER_PORT = 8080;
+    public final static int SERVER_PORT = 8000;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         ServerSocket serverSocket = null;
         try {
             System.out.println("Binding to port " + SERVER_PORT + ", please wait  ...");
             serverSocket = new ServerSocket(SERVER_PORT);
             System.out.println("Server started: " + serverSocket);
             System.out.println("Waiting for a client ...");
+
+            Boolean login = MySQLAccess.login("manh", "asdf");
+            System.out.println(login);
+
             while (true) {
                 try {
                     Socket socket = serverSocket.accept();
@@ -27,46 +33,65 @@ public class Server {
                     InputStream is = socket.getInputStream();
                     PrintWriter writer = new PrintWriter(os,true);
                     BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-                    String num1, num2, op, KQ;
-                    //đọc lần lượt sotien, desloai, resloai
-                    num1 = reader.readLine();
-                    num2 = reader.readLine();
-                    op = reader.readLine();
-                    //gọi hàm CHANGE đưa vào KQ
-                    KQ = XuLy(num1, num2, op);
-                    //gửi KQ qua client  
-                    writer.println(KQ);
+
+                    String type, userName, password, result;
+
+                    type = reader.readLine();
+                    userName = reader.readLine();
+                    password = reader.readLine();
+                    result = Perform(type, userName, password);
+                    writer.println(result);
+
                     socket.close();
                 } catch (IOException e) {
                     System.err.println(" Connection Error: " + e);
                 }
             }
-        } catch (IOException e1) {
-            e1.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         } finally {
             if (serverSocket != null) {
                 serverSocket.close();
             }
         }
     }
-    private static String XuLy(String num1, String num2, String op){
-        String KQ = "Không thể tính toán!";
-        try{
-            double n1 = Double.parseDouble(num1);
-            double n2 = Double.parseDouble(num2);
-            double kq=0;
-            char pt = op.charAt(0);
-            switch(pt){
-                case '+': kq=n1+n2;KQ = kq+""; break;
-                case '-': kq=n1-n2;KQ = kq+""; break;
-                case 'x': kq=n1*n2;KQ = kq+""; break;
-                case ':': kq=n1/n2;KQ = kq+""; break;
-                default:KQ = "Phép toán không hợp lệ!";
+
+    private static String Perform(String type, String userName, String password) {
+        String result = "Không hợp lệ";
+        try {
+            int action = Integer.parseInt(type);
+            switch (action) {
+                case 0:
+                    System.out.println("Login");
+                    result = "Login";
+                    break;
+                case 1:
+                    System.out.println("Remain amount");
+                    result = "Remain amount";
+                    break;
+                case 2:
+                    System.out.println("Change password");
+                    result = "Change password";
+                    break;
+                case 3:
+                    System.out.println("Withdraw");
+                    result = "Withdraw";
+                    break;
+                case 4:
+                    System.out.println("Deposit");
+                    result = "Deposit";
+                    break;
+                case 5:
+                    System.out.println("Transfer");
+                    result = "Transfer";
+                    break;
+                default:
+                    result = "Không hợp lệ";
             }
+
+        } catch (Exception ex) {
+            result = "Không hợp lệ";
         }
-        catch(Exception ex){
-            KQ = "Không thể tính toán!";
-        }
-        return KQ;
+        return result;
     }
 }
