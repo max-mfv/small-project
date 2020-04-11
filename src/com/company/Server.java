@@ -22,9 +22,6 @@ public class Server {
             System.out.println("Server started: " + serverSocket);
             System.out.println("Waiting for a client ...");
 
-            Boolean login = MySQLAccess.login("manh", "asdf");
-            System.out.println(login);
-
             while (true) {
                 try {
                     Socket socket = serverSocket.accept();
@@ -56,14 +53,13 @@ public class Server {
         }
     }
 
-    private static String Perform(String type, String userName, String password) {
+    private static String Perform(String type, String AccountID, String Password) {
         String result = "Không hợp lệ";
         try {
             int action = Integer.parseInt(type);
             switch (action) {
                 case 0:
-                    System.out.println("Login");
-                    result = "Login";
+                    result = PerformLogin(AccountID, Password);
                     break;
                 case 1:
                     System.out.println("Remain amount");
@@ -93,5 +89,13 @@ public class Server {
             result = "Không hợp lệ";
         }
         return result;
+    }
+
+    private static String PerformLogin(String AccountID, String Password) throws Exception {
+        if (MySQLAccess.login(AccountID, Password)) {
+            return "success";
+        } else {
+            return "fail";
+        }
     }
 }
