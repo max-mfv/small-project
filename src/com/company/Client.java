@@ -1,5 +1,8 @@
 package com.company;
 
+import com.company.model.Account;
+import com.company.server.LoginService;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
@@ -8,7 +11,9 @@ public class Client {
     public final static String SERVER_IP = "127.0.0.1";
     public final static int SERVER_PORT = 8000;
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    private static Account account = new Account();
+
+    public static void main(String[] args) throws IOException {
         Socket socket = null;
         try {
             // Connect to server
@@ -25,42 +30,75 @@ public class Client {
 
             // In ra màn hình
             System.out.println("Welcome to ABC banking!");
-            String account, password, result;
 
-            Scanner scan = new Scanner(System.in);
+            if (LoginService.loginFunction(writer, reader)) {
+                System.out.printf("Login thành công");
 
-            while (true) {
-                System.out.print("Nhập Account: ");
-                account = scan.nextLine();
-                if (account.length() > 0) {
-                    break;
-                } else {
-                    System.out.println("Phải nhập");
-                }
+                // Lấy Account ID từ server trả về
+                account.setAccountNo(reader.readLine());
+                account.setAmount(Double.parseDouble(reader.readLine()));
+                renderMenuFunction(writer, reader);
+            } else {
+                System.out.printf("Sai Account hoặc Password");
             }
-            while (true) {
-                System.out.print("Nhập Password: ");
-                password = scan.nextLine();
-                if (password.length() > 0)
-                    break;
-                else
-                    System.out.println("Phải nhập");
-            }
-
-            // Write data để gửi lên server
-            writer.println(0);
-            writer.println(account);
-            writer.println(password);
-
-            // Lấy data từ server
-            result = reader.readLine();
-            System.out.println("Kết quả: " + result);
-
         } catch (IOException ie) {
             System.out.println("Can't connect to server");
         } finally {
             if (socket != null) {
                 socket.close();
+            }
+        }
+    }
+
+    private static void renderMenuFunction(PrintWriter writer, BufferedReader reader) {
+        Scanner scan = new Scanner(System.in);
+        while (true) {
+
+            // Disconnect socket nếu account id null
+            if (account.getAccountNo() == null) {
+                break;
+            }
+
+            int select;
+            System.out.println("Chọn chức năng: ");
+            System.out.println("1 - Xem số dư");
+            System.out.println("2 - Đổi mật khẩu");
+            System.out.println("3 - Rút tiền");
+            System.out.println("4 - Nạp tiền");
+            System.out.println("5 - Chuyển tiền");
+            System.out.println("6 - Thoát");
+            while (true) {
+                System.out.println("Mời chọn:");
+                try {
+                    select = Integer.parseInt(scan.nextLine());
+                    if (select > 0 && select <= 6) {
+                        break;
+                    } else {
+                        System.out.println("Mời chọn lại: ");;
+                    }
+                } catch (Exception e) {
+                    System.out.println("Mời chọn từ 0-6");
+                }
+            }
+            switch (select) {
+                case 1:
+                    System.out.println("Số dư hiện tại của bạn là: " + account.getAmount());
+                    break;
+                case 2:
+                    System.out.println("Đổi mật khẩu");
+                    break;
+                case 3:
+                    System.out.println("Rút tiền");
+                    break;
+                case 4:
+                    System.out.println("Nạp tiền");
+                    break;
+                case 5:
+                    System.out.println("Chuyển tiền");
+                    break;
+                default:
+                    account.setAccountNo(null);
+                    break;
             }
         }
     }

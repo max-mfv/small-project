@@ -1,5 +1,6 @@
 package com.company;
 
+import com.company.model.Account;
 import com.company.server.MySQLAccess;
 
 import java.io.BufferedReader;
@@ -37,18 +38,10 @@ public class Server {
                     BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
                     // Lấy dữ liệu từ Client
-                    String action, userName, password, result;
-
-                    action = reader.readLine();
-                    userName = reader.readLine();
-                    password = reader.readLine();
+                    String action = reader.readLine();
 
                     // Process dữ liệu hàm Perform
-                    result = Perform(action, userName, password);
-
-                    // Gửi dữ liệu về cho Client
-                    writer.println(result);
-
+                    Perform(action, writer, reader);
                     socket.close();
                 } catch (IOException e) {
                     System.err.println(" Connection Error: " + e);
@@ -63,33 +56,33 @@ public class Server {
         }
     }
 
-    private static String Perform(String type, String AccountID, String Password) {
+    private static void Perform(String type, PrintWriter writer, BufferedReader reader) {
         String result = "Không hợp lệ";
         try {
             int action = Integer.parseInt(type);
             switch (action) {
                 case 0:
-                    result = PerformLogin(AccountID, Password);
+                    PerformLogin(writer, reader);
                     break;
                 case 1:
                     System.out.println("Remain amount");
-                    result = PerformCase1(AccountID, Password);
+                    result = PerformCase1(writer, reader);
                     break;
                 case 2:
                     System.out.println("Change password");
-                    result = PerformCase2(AccountID, Password);
+                    result = PerformCase2(writer, reader);
                     break;
                 case 3:
                     System.out.println("Withdraw");
-                    result = PerformCase3(AccountID, Password);
+                    result = PerformCase3(writer, reader);
                     break;
                 case 4:
                     System.out.println("Deposit");
-                    result = PerformCase4(AccountID, Password);
+                    result = PerformCase4(writer, reader);
                     break;
                 case 5:
                     System.out.println("Transfer");
-                    result = PerformCase5(AccountID, Password);
+                    result = PerformCase5(writer, reader);
                     break;
                 default:
                     result = "Không hợp lệ";
@@ -98,34 +91,44 @@ public class Server {
         } catch (Exception ex) {
             result = "Không hợp lệ";
         }
-        return result;
     }
 
-    private static String PerformLogin(String AccountID, String Password) throws Exception {
-        if (MySQLAccess.login(AccountID, Password)) {
-            return "success";
+    private static void PerformLogin(PrintWriter writer, BufferedReader reader) throws Exception {
+        // Lấy dữ liệu từ Client
+        String accountID = reader.readLine();
+        String password = reader.readLine();
+
+
+        Account account = MySQLAccess.login(accountID, password);
+
+        if (account.getAccountNo() == null) {
+            writer.println("fail");
         } else {
-            return "fail";
+            writer.println("success");
+
+            // Response client AccountNo và Số dư (Amount)
+            writer.println(account.getAccountNo());
+            writer.println(account.getAmount());
         }
     }
 
-    private static String PerformCase1(String AccountID, String Password) {
+    private static String PerformCase1(PrintWriter writer, BufferedReader reader) {
         return "";
     }
 
-    private static String PerformCase2(String AccountID, String Password) {
+    private static String PerformCase2(PrintWriter writer, BufferedReader reader) {
         return "";
     }
 
-    private static String PerformCase3(String AccountID, String Password) {
+    private static String PerformCase3(PrintWriter writer, BufferedReader reader) {
         return "";
     }
 
-    private static String PerformCase4(String AccountID, String Password) {
+    private static String PerformCase4(PrintWriter writer, BufferedReader reader) {
         return "";
     }
 
-    private static String PerformCase5(String AccountID, String Password) {
+    private static String PerformCase5(PrintWriter writer, BufferedReader reader) {
         return "";
     }
 }
