@@ -17,26 +17,36 @@ public class Server {
     public static void main(String[] args) throws Exception {
         ServerSocket serverSocket = null;
         try {
+            // Khởi tạo Socket
             System.out.println("Binding to port " + SERVER_PORT + ", please wait  ...");
             serverSocket = new ServerSocket(SERVER_PORT);
             System.out.println("Server started: " + serverSocket);
             System.out.println("Waiting for a client ...");
 
+
             while (true) {
                 try {
+                    // Client kết nối đến server
                     Socket socket = serverSocket.accept();
                     System.out.println("Client accepted: " + socket);
                     OutputStream os = socket.getOutputStream();
                     InputStream is = socket.getInputStream();
+
+                    // Tạo Writer, Reader
                     PrintWriter writer = new PrintWriter(os,true);
                     BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
-                    String type, userName, password, result;
+                    // Lấy dữ liệu từ Client
+                    String action, userName, password, result;
 
-                    type = reader.readLine();
+                    action = reader.readLine();
                     userName = reader.readLine();
                     password = reader.readLine();
-                    result = Perform(type, userName, password);
+
+                    // Process dữ liệu hàm Perform
+                    result = Perform(action, userName, password);
+
+                    // Gửi dữ liệu về cho Client
                     writer.println(result);
 
                     socket.close();
@@ -63,23 +73,23 @@ public class Server {
                     break;
                 case 1:
                     System.out.println("Remain amount");
-                    result = "Remain amount";
+                    result = PerformCase1(AccountID, Password);
                     break;
                 case 2:
                     System.out.println("Change password");
-                    result = "Change password";
+                    result = PerformCase2(AccountID, Password);
                     break;
                 case 3:
                     System.out.println("Withdraw");
-                    result = "Withdraw";
+                    result = PerformCase3(AccountID, Password);
                     break;
                 case 4:
                     System.out.println("Deposit");
-                    result = "Deposit";
+                    result = PerformCase4(AccountID, Password);
                     break;
                 case 5:
                     System.out.println("Transfer");
-                    result = "Transfer";
+                    result = PerformCase5(AccountID, Password);
                     break;
                 default:
                     result = "Không hợp lệ";
@@ -97,5 +107,25 @@ public class Server {
         } else {
             return "fail";
         }
+    }
+
+    private static String PerformCase1(String AccountID, String Password) {
+        return "";
+    }
+
+    private static String PerformCase2(String AccountID, String Password) {
+        return "";
+    }
+
+    private static String PerformCase3(String AccountID, String Password) {
+        return "";
+    }
+
+    private static String PerformCase4(String AccountID, String Password) {
+        return "";
+    }
+
+    private static String PerformCase5(String AccountID, String Password) {
+        return "";
     }
 }

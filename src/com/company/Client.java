@@ -11,14 +11,19 @@ public class Client {
     public static void main(String[] args) throws IOException, InterruptedException {
         Socket socket = null;
         try {
-            socket = new Socket(SERVER_IP, SERVER_PORT); // Connect to server
+            // Connect to server
+            // Khởi tạo connect đến server
+            socket = new Socket(SERVER_IP, SERVER_PORT);
             System.out.println("Connected: " + socket);
             InputStream is = socket.getInputStream();
             OutputStream os = socket.getOutputStream();
 
+            // Writer
             PrintWriter writer = new PrintWriter(os, true);
+            // Reader
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
+            // In ra màn hình
             System.out.println("Welcome to ABC banking!");
             String account, password, result;
 
@@ -41,12 +46,16 @@ public class Client {
                 else
                     System.out.println("Phải nhập");
             }
+
+            // Write data để gửi lên server
             writer.println(0);
             writer.println(account);
             writer.println(password);
 
+            // Lấy data từ server
             result = reader.readLine();
             System.out.println("Kết quả: " + result);
+
         } catch (IOException ie) {
             System.out.println("Can't connect to server");
         } finally {
