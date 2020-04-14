@@ -24,7 +24,6 @@ public class Server {
             System.out.println("Server started: " + serverSocket);
             System.out.println("Waiting for a client ...");
 
-
             while (true) {
                 try {
                     // Client kết nối đến server
@@ -40,7 +39,7 @@ public class Server {
                     // Lấy dữ liệu từ Client
                     String action = reader.readLine();
 
-                    // Process dữ liệu hàm Perform
+                    // Process dữ liệu trong hàm Perform
                     Perform(action, writer, reader);
                     socket.close();
                 } catch (IOException e) {
@@ -97,7 +96,6 @@ public class Server {
         // Lấy dữ liệu từ Client
         String accountID = reader.readLine();
         String password = reader.readLine();
-
 
         Account account = MySQLAccess.login(accountID, password);
 
