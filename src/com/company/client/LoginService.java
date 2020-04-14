@@ -1,4 +1,4 @@
-package com.company.server;
+package com.company.client;
 
 import com.company.model.Account;
 
@@ -38,7 +38,6 @@ public class LoginService {
 
         // Lấy data từ server
         result = reader.readLine();
-//        Account account = new Account()
         if (result.equals("success")) {
             return true;
         }

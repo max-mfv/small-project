@@ -15,7 +15,7 @@ public class MySQLAccess {
 
         // Tạo câu SQL query
         String sql = MessageFormat.format("select * from bank_atm.accounts where account_number=\"{0}\" and password=\"{1}\"", userName, password);
-        ResultSet resultSet = requestDB(sql);
+        ResultSet resultSet = statement().executeQuery(sql);
 
         if (resultSet.next()) {
             account.setAccountNo(resultSet.getString(1));
@@ -24,8 +24,17 @@ public class MySQLAccess {
         return account;
     }
 
-    private static ResultSet requestDB(String query) throws SQLException, ClassNotFoundException {
-        ResultSet resultSet = null;
+    public static Boolean changePassword(String accountID, String newPassword) throws SQLException, ClassNotFoundException {
+        String sql = MessageFormat.format("update bank_atm.accounts set password = \"{0}\" where account_number = \"{1}\"", newPassword, accountID);
+        int resultSet = statement().executeUpdate(sql);
+
+        if (resultSet == 1) {
+            return true;
+        }
+        return true;
+    }
+
+    private static Statement statement() throws SQLException, ClassNotFoundException {
         Connection connect = null;
         Statement statement = null;
 
@@ -34,13 +43,11 @@ public class MySQLAccess {
             // Lêt nối với MySql database
             connect = DriverManager.getConnection("jdbc:mysql://localhost/bank_atm", userNameDB, passwordDB);
             statement = connect.createStatement();
-
             // Chạy câu lệnh SQL
-            resultSet = statement.executeQuery(query);
         } catch (Exception e) {
             throw e;
         } finally {
         }
-        return  resultSet;
+        return  statement;
     }
 }

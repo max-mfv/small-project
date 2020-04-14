@@ -11,9 +11,10 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 
 public class Server {
-    public final static int SERVER_PORT = 8000;
+    public final static int SERVER_PORT = 8002;
 
     public static void main(String[] args) throws Exception {
         ServerSocket serverSocket = null;
@@ -38,6 +39,7 @@ public class Server {
 
                     // Lấy dữ liệu từ Client
                     String action = reader.readLine();
+                    System.out.printf(action);
 
                     // Process dữ liệu trong hàm Perform
                     Perform(action, writer, reader);
@@ -55,41 +57,31 @@ public class Server {
         }
     }
 
-    private static void Perform(String type, PrintWriter writer, BufferedReader reader) {
-        String result = "Không hợp lệ";
-        try {
+    private static void Perform(String type, PrintWriter writer, BufferedReader reader) throws Exception {
             int action = Integer.parseInt(type);
             switch (action) {
                 case 0:
                     PerformLogin(writer, reader);
-                    break;
-                case 1:
-                    System.out.println("Remain amount");
-                    result = PerformCase1(writer, reader);
-                    break;
+//                    break;
                 case 2:
                     System.out.println("Change password");
-                    result = PerformCase2(writer, reader);
-                    break;
+                    PerformChangePassword(writer, reader);
+//                    break;
                 case 3:
                     System.out.println("Withdraw");
-                    result = PerformCase3(writer, reader);
-                    break;
+                    PerformCase3(writer, reader);
+//                    break;
                 case 4:
                     System.out.println("Deposit");
-                    result = PerformCase4(writer, reader);
-                    break;
+                    PerformCase4(writer, reader);
+//                    break;
                 case 5:
                     System.out.println("Transfer");
-                    result = PerformCase5(writer, reader);
-                    break;
+                    PerformCase5(writer, reader);
+//                    break;
                 default:
-                    result = "Không hợp lệ";
+                    System.out.println("Không làm gì");
             }
-
-        } catch (Exception ex) {
-            result = "Không hợp lệ";
-        }
     }
 
     private static void PerformLogin(PrintWriter writer, BufferedReader reader) throws Exception {
@@ -110,12 +102,18 @@ public class Server {
         }
     }
 
-    private static String PerformCase1(PrintWriter writer, BufferedReader reader) {
-        return "";
-    }
 
-    private static String PerformCase2(PrintWriter writer, BufferedReader reader) {
-        return "";
+    private static void PerformChangePassword(PrintWriter writer, BufferedReader reader) throws IOException, SQLException, ClassNotFoundException {
+        // Lấy dữ liệu từ client
+        String action = reader.readLine();
+        String accountID = reader.readLine();
+        String newPassword = reader.readLine();
+
+        if(MySQLAccess.changePassword(accountID, newPassword)) {
+            writer.println("success");
+        } else {
+            writer.println("fail");
+        }
     }
 
     private static String PerformCase3(PrintWriter writer, BufferedReader reader) {
